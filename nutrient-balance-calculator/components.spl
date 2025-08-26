@@ -1,0 +1,13 @@
+
+text-label(@)
+  h3 @{text}
+
+text-input(@)
+  input(type="text")
+number-input(@)
+  input(type="number")
+
+single-year(@)
+  button.year-select
+  h2 Year @{number}
+  input(type="button" value="X").year-delete

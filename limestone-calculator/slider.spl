@@ -1,0 +1,14 @@
+div.calculate-button
+	div.rectangle-2
+	div.calculate Calculate
+div.field-al-content
+	div.background2
+	div.input-placeholder Aluminum content
+	div.input-header (ppm Al) or (mg/kg Al)
+div.field-cmol-content
+	div.background2
+	div.input-placeholder Aluminum content
+	div.input-header cmol Al/kg of soil
+slider(@, text="Factor")
+img.insignia(src="./assets/insignia-uprm-hires.png")
+div.title UPRM\Limestone\Calculator

@@ -1,0 +1,13 @@
+
+html
+  head
+    title Nutriet Balance Calculator
+    style(src="./styles.css")
+    script(src="./script.ts" type="module" async defer)
+  body
+    div#background
+    div#header.page-centered-content
+      h1 Nutriet Balance Calculator
+      div
+        div(src="" style="display:block;width:100%;height:70%;border:2px solid green;")
+        input(type="button" value="English")
