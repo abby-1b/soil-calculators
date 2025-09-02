@@ -23,7 +23,7 @@ export class Tab<T extends Record<string, any>> {
   private renderLabel(labelString: string, hideLabel: boolean) {
     if (hideLabel) return;
     const label = document.createElement('h3');
-    label.innerText = labelString;
+    label.innerHTML = labelString;
     label.className = 'text-label';
     this.element.appendChild(label);
   }

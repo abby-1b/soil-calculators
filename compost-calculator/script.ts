@@ -1,15 +1,26 @@
-import { DynamicTabs, Tab } from './dynamic-tabs.ts';
+import { DynamicTabs, Tab } from '../dynamic-tabs.ts';
 
-const COMPOST_TYPES: Record<string, unknown> = {
-  
+const COMPOST_TYPES: Record<string, number> = {
+  'Composta de madera': 1010,
+  'Composta de gallinaza': 1333,
+  'Composta de setas': 1333,
+  'Composta de pulpa de café': 626,
+  'Composta de estiercol de caballo': 866,
+  'Composta de estiércol de vaca': 1131,
+  'Biosólidos compostados': 1131,
 };
 
 const tabInput = new Tab<{}>()
   .select('Compost Type', COMPOST_TYPES)
-  .number('Amount of compost to apply (yds^3)')
-  .number('Lot size (ft^2)')
+  .number('Amount of Compost to be Applied (yds&sup3;)')
+  .number('Lot Size (ft&sup2;)')
+  .number('C:N Ratio')
 
-  .horizontalNumbers('(% As Rcvd.)', [ 'N Total', 'Phosphorus', 'Potassium' ] as const)
+  .horizontalNumbers('Percentages (As Rcvd)', [
+    'N Total',
+    'Phosphorus (% P2O5)',
+    'Potassium (% K2O)'
+  ] as const, true)
   ;
 
 const tabOutput = new Tab<{}>()
@@ -31,96 +42,41 @@ const tabs = new DynamicTabs<{}>(document.body)
 tabInput.addInputListener(() => {
   console.log('Input changed!');
 
-  const cropInformation = tabInput.getValue('Crop');
+  const lotSize = tabInput.getValue('Lot Size (ft&sup2;)');
+  const tonsAppliedToLot = (
+    tabInput.getValue('Amount of Compost to be Applied (yds&sup3;)') *
+    tabInput.getValue('Compost Type')
+  ) / 2000;
 
-  // Get nutrients
-  const nutrients = tabInput.getValue('NPK (as rcvd.)');
+  // Nitrogen
 
-  // TODO: Get nitrogen RangeValue (low/medium/high)
-  let nitrogenLevel = RangeValue.MEDIUM;
+  const lbsNPerTonCompost = tabInput.getValue('Percentages (As Rcvd)')[0] * 20;
+  const lbsNTotalApplied = tonsAppliedToLot * lbsNPerTonCompost;
+  const percentAvailabilityN = (-0.0085 * tabInput.getValue('C:N Ratio')) + 0.2106;
 
-  // Get phosphorus RangeValue (low/medium/high)
-  const phosphorusRange = tabInput.getValue('Soil Test Method');
-  let phosphorusLevel: RangeValue;
-  if (nutrients[1] < phosphorusRange[0]) {
-    phosphorusLevel = RangeValue.LOW;
-  } else if (nutrients[1] <= phosphorusRange[1]) {
-    phosphorusLevel = RangeValue.MEDIUM;
-  } else {
-    phosphorusLevel = RangeValue.HIGH;
-  }
+  const lbsNAvailablePerLot = lbsNTotalApplied * percentAvailabilityN;
+  const equivalenceLbsNPerAcre = (lbsNAvailablePerLot * 43500) / lotSize;
 
-  // Get potassium RangeValue (low/medium/high)
-  let potassiumLevel: RangeValue;
-  if (nutrients[2] < 78) {
-    potassiumLevel = RangeValue.LOW;
-  } else if (nutrients[2] <= 157) {
-    potassiumLevel = RangeValue.MEDIUM;
-  } else {
-    potassiumLevel = RangeValue.HIGH;
-  }
+  // Phosphorus
 
-  // Get the fertilizer recommendation
-  const recommendation: NPK = [
-    cropInformation.fertilizerRecom.n[nitrogenLevel],
-    cropInformation.fertilizerRecom.p[phosphorusLevel],
-    cropInformation.fertilizerRecom.k[potassiumLevel]
-  ];
+  const lbsP2O5PerLbCompost = tabInput.getValue('Percentages (As Rcvd)')[1] / 100;
+  const lbsP2O5AppliedToLot = (lbsP2O5PerLbCompost * 2000) * tonsAppliedToLot;
 
-  console.log('Recommendation:', recommendation);
+  const lbsP2O5AvailablePerLot = lbsP2O5AppliedToLot * 0.85;
+  const equivalenceLbsP2O5PerAcre = (lbsP2O5AvailablePerLot * 43500) / lotSize;
 
-  // Output
+  // Potassium
+
+  const lbsK2OPerLbCompost = tabInput.getValue('Percentages (As Rcvd)')[2] / 100;
+  const lbsK2OAppliedToLot = (lbsK2OPerLbCompost * 2000) * tonsAppliedToLot;
+
+  const lbsK2OAvailablePerLot = lbsK2OAppliedToLot * 0.9;
+  const equivalenceLbsK2OPerAcre = (lbsK2OAvailablePerLot * 43500) / lotSize;
+
   (tabOutput.element.querySelector('.N-out') as HTMLInputElement)
-    .value = '' + recommendation[0];
+    .value = '' + lbsNAvailablePerLot;
   (tabOutput.element.querySelector('.P-out') as HTMLInputElement)
-    .value = '' + recommendation[1];
+    .value = '' + lbsP2O5AvailablePerLot;
   (tabOutput.element.querySelector('.K-out') as HTMLInputElement)
-    .value = '' + recommendation[2];
-  
-  closestComposts(recommendation);
+    .value = '' + lbsK2OAvailablePerLot;
 });
-
-// Normalize NPK values
-function normalizeNPK(npk: NPK): NPK {
-  const mag = Math.hypot(...npk);
-  if (mag == 0) return [ 0, 0, 0 ];
-  return [
-    npk[0] / mag,
-    npk[1] / mag,
-    npk[2] / mag,
-  ];
-}
-function normalizedNPKDiff(a: NPK, b: NPK): number {
-  // const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  // return dot * 0.5 + 0.5;
-  const diffSq =
-    SCORE_COEFFICIENTS[0] * ((a[0] - b[0]) ** 2) +
-    SCORE_COEFFICIENTS[1] * ((a[1] - b[1]) ** 2) +
-    SCORE_COEFFICIENTS[2] * ((a[2] - b[2]) ** 2);
-  return 1 / (1 + diffSq);
-}
-
-function closestComposts(npk: NPK): string[] {
-  const inputNpk = normalizeNPK(npk);
-
-  const composts = Object.entries(COMPOST_OPTIONS).map(compost => {
-    return { name: compost[0], npk: normalizeNPK(compost[1]), score: -1 };
-  });
-
-  // Get scores
-  for (let i = 0; i < composts.length; i++) {
-    composts[i].score = normalizedNPKDiff(inputNpk, composts[i].npk);
-  }
-
-  composts.sort((a, b) => b.score - a.score);
-  console.log(composts)
-
-  return composts.map(c => c.name);
-}
-
-closestComposts([ 89, 18, 80 ]);
-//  23.0  6.0 120.0
-//   5.8  1.5  30.0
-//  10.0  2.0  30.0
-
-// Object.values(COMPOST_OPTIONS).forEach(v => console.log(normalizeNPK(v).join(', ')))
