@@ -1,4 +1,4 @@
-import { DynamicTabs, Tab } from "./dynamic-tabs";
+import { DynamicTabs, Tab } from "../dynamic-tabs.ts";
 
 const SCORE_COEFFICIENTS = [ 1, 1, 1 ];
 
