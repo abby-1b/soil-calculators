@@ -1,4 +1,22 @@
 
+export class Translation {
+  private static currentLanguage: string = '';
+  private static labelIndex = 0;
+  private static labels: string[] = [];
+
+  public static useLanguage(lang: string) {
+    this.currentLanguage = lang;
+    this.labelIndex = 0;
+  }
+
+  public static getLabel(fallback: string): string {
+    if (this.labelIndex >= this.labels.length) {
+      return `[ Label ${this.labelIndex++} ]`;
+    }
+    return this.labels[this.labelIndex++];
+  }
+}
+
 export class Tab<T extends Record<string, any>> {
   public element = document.createElement('div');
   private inputs = new Map<string, any>();
@@ -23,7 +41,7 @@ export class Tab<T extends Record<string, any>> {
   private renderLabel(labelString: string, hideLabel: boolean) {
     if (hideLabel) return;
     const label = document.createElement('h3');
-    label.innerHTML = labelString;
+    label.innerHTML = Translation.getLabel(labelString);
     label.className = 'text-label';
     this.element.appendChild(label);
   }
@@ -74,7 +92,7 @@ export class Tab<T extends Record<string, any>> {
     selectInput.className = 'select-input';
     optionStrings.forEach(o => {
       const option = document.createElement('option');
-      option.text = o;
+      option.text = Translation.getLabel(o);
       selectInput.appendChild(option);
     });
     selectInput.onchange = () => {
@@ -93,7 +111,7 @@ export class Tab<T extends Record<string, any>> {
     horizElement.className = 'horizontal-container'
     for (let i = 0; i < labels.length; i++) {
       const labelElement = document.createElement('h3');
-      labelElement.innerText = labels[i];
+      labelElement.innerText = Translation.getLabel(labels[i]);
       labelElement.className = 'text-label';
       horizElement.appendChild(labelElement);
       const numberInput = document.createElement('input');

@@ -1,5 +1,8 @@
 import { DynamicTabs, Tab } from '../dynamic-tabs.ts';
 
+const AVAILABILITY_P2O5 = 0.85;
+const AVAILABILITY_K2O = 0.9;
+
 const COMPOST_TYPES: Record<string, number> = {
   'Composta de madera': 1010,
   'Composta de gallinaza': 1333,
@@ -62,7 +65,7 @@ tabInput.addInputListener(() => {
   const lbsP2O5PerLbCompost = tabInput.getValue('Percentages (As Rcvd)')[1] / 100;
   const lbsP2O5AppliedToLot = (lbsP2O5PerLbCompost * 2000) * tonsAppliedToLot;
 
-  const lbsP2O5AvailablePerLot = lbsP2O5AppliedToLot * 0.85;
+  const lbsP2O5AvailablePerLot = lbsP2O5AppliedToLot * AVAILABILITY_P2O5;
   const equivalenceLbsP2O5PerAcre = (lbsP2O5AvailablePerLot * 43500) / lotSize;
 
   // Potassium
@@ -70,7 +73,7 @@ tabInput.addInputListener(() => {
   const lbsK2OPerLbCompost = tabInput.getValue('Percentages (As Rcvd)')[2] / 100;
   const lbsK2OAppliedToLot = (lbsK2OPerLbCompost * 2000) * tonsAppliedToLot;
 
-  const lbsK2OAvailablePerLot = lbsK2OAppliedToLot * 0.9;
+  const lbsK2OAvailablePerLot = lbsK2OAppliedToLot * AVAILABILITY_K2O;
   const equivalenceLbsK2OPerAcre = (lbsK2OAvailablePerLot * 43500) / lotSize;
 
   (tabOutput.element.querySelector('.N-out') as HTMLInputElement)
