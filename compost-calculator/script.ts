@@ -1,7 +1,9 @@
-import { DynamicTabs, Tab } from '../dynamic-tabs.ts';
+import { DynamicTabs, Tab, Translation } from '../dynamic-tabs.ts';
 
-const AVAILABILITY_P2O5 = 0.85;
+const AVAILABILITY_P2O5 = 0.7;
 const AVAILABILITY_K2O = 0.9;
+
+Translation.useLanguage(await (await fetch('./langs.json')).json());
 
 const COMPOST_TYPES: Record<string, number> = {
   'Composta de madera': 1010,
@@ -77,9 +79,9 @@ tabInput.addInputListener(() => {
   const equivalenceLbsK2OPerAcre = (lbsK2OAvailablePerLot * 43500) / lotSize;
 
   (tabOutput.element.querySelector('.N-out') as HTMLInputElement)
-    .value = '' + lbsNAvailablePerLot;
+    .value = '' + lbsNAvailablePerLot.toFixed(1);
   (tabOutput.element.querySelector('.P-out') as HTMLInputElement)
-    .value = '' + lbsP2O5AvailablePerLot;
+    .value = '' + lbsP2O5AvailablePerLot.toFixed(1);
   (tabOutput.element.querySelector('.K-out') as HTMLInputElement)
-    .value = '' + lbsK2OAvailablePerLot;
+    .value = '' + lbsK2OAvailablePerLot.toFixed(1);
 });

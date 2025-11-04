@@ -4,16 +4,18 @@ export class Translation {
   private static labelIndex = 0;
   private static labels: string[] = [];
 
-  public static useLanguage(lang: string) {
-    this.currentLanguage = lang;
+  public static useLanguage(lang: string[]) {
+    // this.currentLanguage = lang;
+    this.labels = lang;
     this.labelIndex = 0;
   }
 
   public static getLabel(fallback: string): string {
-    if (this.labelIndex >= this.labels.length) {
-      return `[ Label ${this.labelIndex++} ]`;
-    }
-    return this.labels[this.labelIndex++];
+    return fallback;
+    // if (this.labelIndex >= this.labels.length) {
+      // return `[ Label ${this.labelIndex++} ]`;
+    // }
+    // return this.labels[this.labelIndex++];
   }
 }
 
