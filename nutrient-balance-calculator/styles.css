@@ -19,13 +19,28 @@
 
 .select-input, .number-input, .text-input {
   width: 100%;
-  padding: 4px;
-  padding-left: 8px;
+  padding: 8px;
+  padding-left: 12px;
   margin-bottom: 16px;
   font-size: 1.3em;
-  border-radius: var(--border-radius);
+  border-radius: 40px;
   box-sizing: border-box;
-  border: none;
+  border: 1.5px solid #e0e0e0;
+  background-color: #fff;
+  color: #222;
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.07);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.select-input:hover, .number-input:hover, .text-input:hover {
+  border-color: #007BFF;
+  box-shadow: 0 2px 8px 0 rgba(0,123,255,0.10);
+}
+
+.select-input:focus, .number-input:focus, .text-input:focus {
+  border-color: #0056b3;
+  box-shadow: 0 2px 12px 0 rgba(0,86,179,0.18);
+  outline: none;
 }
 
 .number-input *, .text-input * {
@@ -72,12 +87,29 @@
 .output-tab {
   position: fixed !important;
   bottom: 0;
-  background-color: #0008;
-  border-radius: 12px 12px 0 0;
-  padding-top: 6px;
+  left: 0;
+  width: 100vw;
+  background-color: rgba(0,0,0,0.85);
+  border-radius: 18px 18px 0 0;
+  padding: 18px 0 12px 0;
+  box-shadow: 0 -2px 16px 0 rgba(0,0,0,0.25);
+  z-index: 100;
 }
 .output-tab input {
   outline: none;
+  background-color: #fff;
+  color: #222;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-size: 1.1em;
+  margin-bottom: 0;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.output-tab input:focus {
+  border-color: #007BFF;
+  box-shadow: 0 2px 8px 0 rgba(0,123,255,0.10);
 }
 
 /* BASE HTML */
@@ -111,6 +143,28 @@ body, html {
   height: 100%;
   z-index: -999;
   display: block;
+}
+#background::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  z-index: -998;
+  pointer-events: none;
+}
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  #header h1 {
+    font-size: 1.3em;
+  }
+  .select-input, .number-input, .text-input {
+    font-size: 1em;
+    padding: 6px 8px;
+  }
+  .output-tab {
+    padding: 10px;
+    border-radius: 12px 12px 0 0;
+  }
 }
 
 /* Top of the page (text, logo, tabs) */

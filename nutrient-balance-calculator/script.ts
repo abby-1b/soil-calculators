@@ -1,9 +1,17 @@
-import { DynamicTabs, Tab } from "../dynamic-tabs.ts";
+import { DynamicTabs, Tab, Translation } from "../dynamic-tabs.ts";
+
+// Load translations and initialize Translation class
+Translation.useLanguage(await (await fetch('./langs.json')).json());
+
+// Set language based on URL parameter
+const searchParams = new URLSearchParams(window.location.search);
+let lang = (searchParams.get("lang") ?? "en").toLowerCase();
+Translation.setLanguage(lang, 2);
 
 const SCORE_COEFFICIENTS = [ 1, 1, 1 ];
 
 type NPK = [ number, number, number ];
-const COMPOST_OPTIONS: Record<string, NPK> = {
+const FERTILIZER_OPTIONS: Record<string, NPK> = {
   '05-10-10': [  5, 10, 10 ],
   '05-25-05': [  5, 25,  5 ],
   '06-06-12': [  6,  6, 12 ],
@@ -211,7 +219,7 @@ tabInput.addInputListener(() => {
   (tabOutput.element.querySelector('.K-out') as HTMLInputElement)
     .value = '' + recommendation[2];
   
-  closestComposts(recommendation);
+  closestFertilizers(recommendation);
 });
 
 // Normalize NPK values
@@ -234,10 +242,10 @@ function normalizedNPKDiff(a: NPK, b: NPK): number {
   return 1 / (1 + diffSq);
 }
 
-function closestComposts(npk: NPK): string[] {
+function closestFertilizers(npk: NPK): string[] {
   const inputNpk = normalizeNPK(npk);
 
-  const composts = Object.entries(COMPOST_OPTIONS).map(compost => {
+  const composts = Object.entries(FERTILIZER_OPTIONS).map(compost => {
     return { name: compost[0], npk: normalizeNPK(compost[1]), score: -1 };
   });
 
@@ -252,9 +260,5 @@ function closestComposts(npk: NPK): string[] {
   return composts.map(c => c.name);
 }
 
-closestComposts([ 89, 18, 80 ]);
-//  23.0  6.0 120.0
-//   5.8  1.5  30.0
-//  10.0  2.0  30.0
-
+closestFertilizers([ 89, 18, 80 ]); // test
 // Object.values(COMPOST_OPTIONS).forEach(v => console.log(normalizeNPK(v).join(', ')))

@@ -1,13 +1,57 @@
 
 html
   head
-    title Nutriet Balance Calculator
-    style(src="./styles.css")
-    script(src="./script.ts" type="module" async defer)
+    title Nutrient Balance Calculator
+    style(src="styles.css")
+    script(src="script.ts" type="module" async defer)
+    script.
+      // Load translations
+      let translations = {};
+      fetch('./langs.json')
+        .then(response => response.json())
+        .then(data => {
+          translations = data;
+          // Apply initial language based on URL parameter or default to English
+          applyLanguage();
+        })
+        .catch(error => console.error('Error loading translations:', error));
+      
+      function applyLanguage() {
+        const searchParams = new URLSearchParams(window.location.search);
+        let lang = (searchParams.get("lang") ?? "en").toLowerCase();
+        if (!translations[lang]) {
+          lang = "en";
+        }
+        
+        const t = translations[lang];
+        console.log(t);
+        if (!t || t.length === 0) return;
+
+        // Title
+        if (t[0]) document.title = t[0];
+        
+        // Button text
+        const button = document.getElementById('language-button');
+        if (button && t[1]) button.value = t[1];
+        
+        // Main heading
+        const heading = document.querySelector('#header h1');
+        if (heading && t[0]) heading.innerHTML = t[0];
+
+        // Store current language for toggling
+        window.currentLanguage = lang;
+      }
+      
+      function switchLanguage() {
+        const newLang = window.currentLanguage === 'en' ? 'es' : 'en';
+        const url = new URL(window.location);
+        url.searchParams.set('lang', newLang);
+        window.location.href = url.toString();
+      }
   body
     div#background
     div#header.page-centered-content
-      h1 Nutriet Balance Calculator
+      h1 Nutrient Balance Calculator
       div
         div(src="" style="display:block;width:100%;height:70%;border:2px solid green;")
-        input(type="button" value="English")
+        input(type="button" value="English" id="language-button" onclick="switchLanguage()")

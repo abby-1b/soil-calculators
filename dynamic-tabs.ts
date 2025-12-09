@@ -1,21 +1,30 @@
 
-export class Translation {
-  private static currentLanguage: string = '';
-  private static labelIndex = 0;
-  private static labels: string[] = [];
+const DEBUGGING = false;
 
-  public static useLanguage(lang: string[]) {
-    // this.currentLanguage = lang;
-    this.labels = lang;
-    this.labelIndex = 0;
+export class Translation {
+  private static currentLanguage: string = 'en';
+  private static labelIndex = 0;
+  private static labels: Record<string, string[]> = {};
+  private static currentLabels: string[] = [];
+
+  public static useLanguage(translations: Record<string, string[]>) {
+    this.labels = translations;
+    this.setLanguage(this.currentLanguage);
+  }
+
+  public static setLanguage(lang: string, startIndex = 0) {
+    this.currentLanguage = lang;
+    this.currentLabels = this.labels[lang] || [];
+    this.labelIndex = startIndex;
   }
 
   public static getLabel(fallback: string): string {
-    return fallback;
-    // if (this.labelIndex >= this.labels.length) {
-      // return `[ Label ${this.labelIndex++} ]`;
-    // }
-    // return this.labels[this.labelIndex++];
+    console.log('Getting label', {fallback, label: this.currentLabels[this.labelIndex], labelIndex: this.labelIndex})
+    const endString = DEBUGGING ? (' [' + fallback + ']') : '';
+    if (this.labelIndex >= this.currentLabels.length) {
+      return fallback + endString;
+    }
+    return (this.currentLabels[this.labelIndex++] || fallback) + endString;
   }
 }
 
