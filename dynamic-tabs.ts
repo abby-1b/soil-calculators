@@ -19,7 +19,6 @@ export class Translation {
   }
 
   public static getLabel(fallback: string): string {
-    console.log('Getting label', {fallback, label: this.currentLabels[this.labelIndex], labelIndex: this.labelIndex})
     const endString = DEBUGGING ? (' [' + fallback + ']') : '';
     if (this.labelIndex >= this.currentLabels.length) {
       return fallback + endString;
@@ -122,7 +121,7 @@ export class Tab<T extends Record<string, any>> {
     horizElement.className = 'horizontal-container'
     for (let i = 0; i < labels.length; i++) {
       const labelElement = document.createElement('h3');
-      labelElement.innerText = Translation.getLabel(labels[i]);
+      labelElement.innerHTML = Translation.getLabel(labels[i]);
       labelElement.className = 'text-label';
       horizElement.appendChild(labelElement);
       const numberInput = document.createElement('input');

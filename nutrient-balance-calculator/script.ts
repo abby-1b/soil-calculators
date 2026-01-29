@@ -154,29 +154,60 @@ const tabInput = new Tab<{}>()
   // .number('NCAT')
   ;
 
-const tabOutput = new Tab<{}>()
-  .horizontalNumbers('Recommendation', [ 'N', 'P', 'K' ] as const, false)
-  ;
-tabOutput.element.classList.add('output-tab');
-tabOutput.element.querySelectorAll('input').forEach((i, index) => {
-  i.readOnly = true;
-  i.tabIndex = -1;
-  i.classList.add([ 'N-out', 'P-out', 'K-out' ][index]);
+// Create a tab for fertilizer recommendations
+const tabFertilizers = new Tab<{}>();
+tabFertilizers.element.classList.add('fertilizer-tab');
+
+// Create recommendation display inside the fertilizer tab
+const recommendationContainer = document.createElement('div');
+recommendationContainer.className = 'recommendation-container';
+const recommendationTitle = document.createElement('h3');
+recommendationTitle.className = 'recommendation-title';
+recommendationTitle.textContent = 'Fertilizer Recommendation (lb/acre/yr)';
+recommendationContainer.appendChild(recommendationTitle);
+
+const recommendationInputsContainer = document.createElement('div');
+recommendationInputsContainer.className = 'recommendation-inputs';
+['N', 'P', 'K'].forEach((label, index) => {
+  const labelElement = document.createElement('span');
+  labelElement.className = 'recommendation-label';
+  labelElement.textContent = label;
+  recommendationInputsContainer.appendChild(labelElement);
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.readOnly = true;
+  input.className = `recommendation-input ${label.toLowerCase()}-out`;
+  input.tabIndex = -1;
+  recommendationInputsContainer.appendChild(input);
 });
-document.body.appendChild(tabOutput.element);
+recommendationContainer.appendChild(recommendationInputsContainer);
+tabFertilizers.element.appendChild(recommendationContainer);
+
+// Create a container for the fertilizer list
+const fertilizerListContainer = document.createElement('div');
+fertilizerListContainer.className = 'fertilizer-list';
+tabFertilizers.element.appendChild(fertilizerListContainer);
 
 const tabs = new DynamicTabs<{}>(document.body)
-  .addTab('Input', tabInput);
+  .addTab('Input', tabInput)
+  .addTab('Fertilizer Recommendations', tabFertilizers);
 (window as any).tabs = tabs;
 (window as any).tab = tabInput;
 
 tabInput.addInputListener(() => {
-  console.log('Input changed!');
-
   const cropInformation = tabInput.getValue('Crop');
 
   // Get nutrients
   const nutrients = tabInput.getValue('NPK (as rcvd.)');
+  if (
+    nutrients[0] === 0 ||
+    nutrients[1] === 0 ||
+    nutrients[2] === 0
+  ) {
+    console.log('Nutrients not filled out.');
+    return;
+  }
 
   // TODO: Get nitrogen RangeValue (low/medium/high)
   let nitrogenLevel = RangeValue.MEDIUM;
@@ -202,6 +233,8 @@ tabInput.addInputListener(() => {
     potassiumLevel = RangeValue.HIGH;
   }
 
+  console.log(cropInformation.fertilizerRecom);
+
   // Get the fertilizer recommendation
   const recommendation: NPK = [
     cropInformation.fertilizerRecom.n[nitrogenLevel],
@@ -211,13 +244,10 @@ tabInput.addInputListener(() => {
 
   console.log('Recommendation:', recommendation);
 
-  // Output
-  (tabOutput.element.querySelector('.N-out') as HTMLInputElement)
-    .value = '' + recommendation[0];
-  (tabOutput.element.querySelector('.P-out') as HTMLInputElement)
-    .value = '' + recommendation[1];
-  (tabOutput.element.querySelector('.K-out') as HTMLInputElement)
-    .value = '' + recommendation[2];
+  // Output to recommendation display in fertilizer tab
+  (document.querySelector('.n-out') as HTMLInputElement).value = '' + recommendation[0];
+  (document.querySelector('.p-out') as HTMLInputElement).value = '' + recommendation[1];
+  (document.querySelector('.k-out') as HTMLInputElement).value = '' + recommendation[2];
   
   closestFertilizers(recommendation);
 });
@@ -233,8 +263,6 @@ function normalizeNPK(npk: NPK): NPK {
   ];
 }
 function normalizedNPKDiff(a: NPK, b: NPK): number {
-  // const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  // return dot * 0.5 + 0.5;
   const diffSq =
     SCORE_COEFFICIENTS[0] * ((a[0] - b[0]) ** 2) +
     SCORE_COEFFICIENTS[1] * ((a[1] - b[1]) ** 2) +
@@ -242,23 +270,60 @@ function normalizedNPKDiff(a: NPK, b: NPK): number {
   return 1 / (1 + diffSq);
 }
 
-function closestFertilizers(npk: NPK): string[] {
+function closestFertilizers(npk: NPK): void {
   const inputNpk = normalizeNPK(npk);
 
-  const composts = Object.entries(FERTILIZER_OPTIONS).map(compost => {
-    return { name: compost[0], npk: normalizeNPK(compost[1]), score: -1 };
+  const fertilizers = Object.entries(FERTILIZER_OPTIONS).map(fertilizer => {
+    return { 
+      name: fertilizer[0], 
+      originalNPK: fertilizer[1],
+      normalizedNPK: normalizeNPK(fertilizer[1]), 
+      score: -1 
+    };
   });
 
   // Get scores
-  for (let i = 0; i < composts.length; i++) {
-    composts[i].score = normalizedNPKDiff(inputNpk, composts[i].npk);
+  for (let i = 0; i < fertilizers.length; i++) {
+    fertilizers[i].score = normalizedNPKDiff(inputNpk, fertilizers[i].normalizedNPK);
   }
 
-  composts.sort((a, b) => b.score - a.score);
-  console.log(composts)
+  fertilizers.sort((a, b) => b.score - a.score);
 
-  return composts.map(c => c.name);
+  // Update the fertilizer list UI
+  updateFertilizerList(fertilizers);
 }
 
-closestFertilizers([ 89, 18, 80 ]); // test
+function updateFertilizerList(fertilizers: Array<{name: string, originalNPK: NPK, normalizedNPK: NPK, score: number}>): void {
+  const container = document.querySelector('.fertilizer-list');
+  if (!container) return;
+  
+  // Clear existing content
+  container.innerHTML = '';
+  
+  // Create a header
+  const header = document.createElement('div');
+  header.className = 'fertilizer-header';
+  header.innerHTML = `
+    <div class="fertilizer-rank">Rank</div>
+    <div class="fertilizer-name">Fertilizer</div>
+    <div class="fertilizer-npk">NPK Values</div>
+    <div class="fertilizer-score">Match Score</div>
+  `;
+  container.appendChild(header);
+  
+  // Add each fertilizer
+  fertilizers.forEach((fert, index) => {
+    const fertElement = document.createElement('div');
+    fertElement.className = 'fertilizer-item';
+    fertElement.innerHTML = `
+      <div class="fertilizer-rank">${index + 1}</div>
+      <div class="fertilizer-name">${fert.name}</div>
+      <div class="fertilizer-npk">${fert.originalNPK[0]}-${fert.originalNPK[1]}-${fert.originalNPK[2]}</div>
+      <div class="fertilizer-score">${(fert.score * 100).toFixed(1)}%</div>
+    `;
+    container.appendChild(fertElement);
+  });
+}
+
+// closestFertilizers([ 89, 18, 80 ]);
 // Object.values(COMPOST_OPTIONS).forEach(v => console.log(normalizeNPK(v).join(', ')))
