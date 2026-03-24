@@ -51,6 +51,12 @@ export class Printing {
     return this;
   }
 
+  public rawHTML(element: HTMLElement): Printing {
+    (element as RawHTMLElement).type = 'raw';
+    this.content.push(element as RawHTMLElement);
+    return this;
+  }
+
   public style(style: TextStyle): Printing {
     this.currentStyle = { ...this.currentStyle, ...style };
     return this;
@@ -216,23 +222,30 @@ export class Printing {
   }
 
   private renderElement(element: DocumentElement): string {
-    const style = this.buildStyleString(element.style);
-    
     switch (element.type) {
-      case 'text':
+      case 'text': {
+        const style = this.buildStyleString(element.style);
         return `<div class="text" style="${style}">${this.escapeHTML(element.content)}</div>`;
+      }
       
-      case 'header1':
+      case 'header1': {
+        const style = this.buildStyleString(element.style);
         return `<h1 class="header1" style="${style}">${this.escapeHTML(element.content)}</h1>`;
+      }
       
-      case 'header2':
+      case 'header2': {
+        const style = this.buildStyleString(element.style);
         return `<h2 class="header2" style="${style}">${this.escapeHTML(element.content)}</h2>`;
+      }
       
       case 'table':
         return this.renderTable(element);
       
       case 'image':
         return this.renderImage(element);
+      
+      case 'raw':
+        return element.outerHTML;
       
       default:
         return '';
@@ -330,7 +343,7 @@ export class Printing {
 }
 
 // Type definitions (same as before)
-type DocumentElement = TextElement | Header1Element | Header2Element | TableElement | ImageElement;
+type DocumentElement = TextElement | Header1Element | Header2Element | TableElement | ImageElement | RawHTMLElement;
 
 interface BaseElement {
   type: string;
@@ -362,6 +375,10 @@ interface ImageElement extends BaseElement {
   type: 'image';
   src: string;
   options: ImageOptions;
+}
+
+interface RawHTMLElement extends HTMLElement {
+  type: 'raw';
 }
 
 interface TextStyle {

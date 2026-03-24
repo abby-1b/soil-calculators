@@ -1,0 +1,81 @@
+/* Print styles for compost calculator report */
+
+.tab-output {
+  background-color: var(--light-gray);
+  height: fit-content;
+  border-radius: 0 0 20px 20px;
+}
+
+.tab-output > .strong-header {
+  background-color: var(--green);
+  color: white;
+  width: 100%;
+  margin: 0;
+  padding-top: 18px;
+  padding-left: 29px;
+  padding-bottom: 14px;
+  font-size: .86em;
+  box-sizing: border-box;
+}
+
+.tab-output > .parts-container {
+  display: grid;
+  gap: 2px;
+  margin: 29px;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.tab-output > .parts-container > div {
+  border-bottom: 2px solid var(--green);
+}
+.tab-output > .parts-container > div:nth-child(3) {
+  border-bottom: none;
+}
+.tab-output > .parts-container > div:nth-child(5) {
+  border-bottom: none;
+}
+
+.tab-output > .parts-container > div div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.tab-output > .parts-container > div h3 {
+  font-size: .74em;
+  margin-top: 27px;
+  margin-bottom: 9px;
+}
+.tab-output > .parts-container > div h4 {
+  font-size: .495em;
+  margin-top: 4px;
+  margin-bottom: 19px;
+}
+
+.tab-output > .parts-container > div h5 {
+  font-size: .75em;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 5px;
+  text-align: right;
+}
+
+.disclaimer-text {
+  font-size: .1em;
+}
+
+.report-button {
+  background-color: var(--green);
+  border: none;
+  color: white;
+  height: 50px;
+  width: 87%;
+  margin: 0;
+  padding: 14px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  font-size: .6em;
+}

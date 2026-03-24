@@ -145,6 +145,13 @@ const POTASSIUM_RANGES: Record<string, [number, number]> = {
   'P Mehlich': [ 14, 32 ],
 };
 
+const UNIT_CONVERSIONS = {
+  'lb/acre/yr': 1,
+  'lb/ft<sup>2</sup>': 0.0000229568,
+  'oz/acre': 16,
+  'oz/ft<sup>2</sup>': 0.0003673095,
+};
+
 const tabInput = new Tab<{}>()
   // .select('Cropping History', COMPOST_OPTIONS)
   .select('Crop', CROP_OPTIONS)
@@ -155,16 +162,19 @@ const tabInput = new Tab<{}>()
   ;
 
 // Create a tab for fertilizer recommendations
-const tabFertilizers = new Tab<{}>();
+const tabFertilizers = new Tab<{}>()
+  .header('Fertilizer Recommendation (lb/acre/yr)')
+  .select('Output Units', Object.keys(UNIT_CONVERSIONS))
+  ;
 tabFertilizers.element.classList.add('fertilizer-tab');
 
 // Create recommendation display inside the fertilizer tab
 const recommendationContainer = document.createElement('div');
 recommendationContainer.className = 'recommendation-container';
-const recommendationTitle = document.createElement('h3');
-recommendationTitle.className = 'recommendation-title';
-recommendationTitle.textContent = 'Fertilizer Recommendation (lb/acre/yr)';
-recommendationContainer.appendChild(recommendationTitle);
+// const recommendationTitle = document.createElement('h3');
+// recommendationTitle.className = 'recommendation-title';
+// recommendationTitle.textContent = Translation.getLabel('Fertilizer Recommendation (lb/acre/yr)');
+// recommendationContainer.appendChild(recommendationTitle);
 
 const recommendationInputsContainer = document.createElement('div');
 recommendationInputsContainer.className = 'recommendation-inputs';

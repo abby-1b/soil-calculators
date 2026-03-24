@@ -3,10 +3,51 @@ html
     title Compost Calculator
     style(src="./styles.css")
     script(src="./script.ts" type="module" async defer)
+    meta(charset="utf-8")
+
   body
-    div#background
-    div#header.page-centered-content
-      h1 Compost Calculator
-      div
-        div(src="" style="display:block;width:100%;height:70%;border:2px solid green;")
-        input(type="button" value="English")
+    div#hero(style="background-image:url('./assets/hero-bg.jpg');background-size:cover;height:300px")
+      h1(style="margin:0;padding:0;width:100%;position:relative;text-align:center;top:118px;font-family:serif;font-size:2.3em;") Calculadora de Composta
+
+    div#tutorial(style="background-color:white;height:562px;color:black;")
+      h2(style="margin:0;padding:0;padding-top:90px;font-size:.989em;width:100%;text-align:center;") CALCULADORA DE COMPOSTA PARA LA PRODUCCIÓN AGRÍCOLA
+      h3(style="margin:0;padding:0;padding-top:59px;font-size:.91em;font-weight:100;width:100%;text-align:center;") ¿Cómo usar la calculadora?
+
+      div(style="margin:auto;margin-top:44px;width:542px;height:260px;background-color:black;")
+
+    div#resources(style="background-color:var(--light-green);height:262px")
+      h2(style="margin:0;padding:0;padding-top:56px;font-size:.86em;width:100%;text-align:center;color:black;") Recursos educativos
+      div(style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr 1fr;max-width:800px;margin:auto;")
+        button.text-input.report-button
+          a(style="padding-left:25px;padding-right:10px;") Información educativa sobre composta
+          img(src="https://www.uprm.edu/hortalizasygranosbasicos/wp-content/uploads/sites/330/2026/03/cc-download-icon.png" style="height: 50%; width: unset; display: block; position: absolute; top: 50%; transform: translate(0px, -50%);")
+        button.text-input.report-button
+          a(style="padding-left:25px;padding-right:10px;") Guía de resultados de compostas
+          img(src="https://www.uprm.edu/hortalizasygranosbasicos/wp-content/uploads/sites/330/2026/03/cc-download-icon.png" style="height: 50%; width: unset; display: block; position: absolute; top: 50%; transform: translate(0px, -50%);")
+        button.text-input.report-button
+          a(style="padding-left:25px;padding-right:10px;") Racional de cálculos
+          img(src="https://www.uprm.edu/hortalizasygranosbasicos/wp-content/uploads/sites/330/2026/03/cc-download-icon.png" style="height: 50%; width: unset; display: block; position: absolute; top: 50%; transform: translate(0px, -50%);")
+
+    div#calculator(style="background-color:white;height:fit-content;color:black;")
+      h2(style="margin:0;padding:0;padding-top:82px;font-size:.989em;width:100%;text-align:center;") CALCULADORA
+      h3(style="margin:0;padding:0;padding-top:10px;font-size:.69em;font-weight:100;width:100%;text-align:center;") Ingrese los datos requeridos
+      div#centered
+
+    div#credits(style="background-color:var(--light-green);color:black;font-size:0.6em")
+      div(style="padding:30px 0 30px 0;max-width:800px;margin:auto")
+        p Herramienta desarrollada por:
+        p(style="font-size:1.1em;font-weight:bold;margin-bottom:0;") Agro. Gustavo A. Rodríguez Rivera, MSc.
+        p(style="font-size:1.1em;margin-top:2px;") Servicio de Extensión Agrícola, Universidad de Puerto Rico, Recinto Universitario de Mayagüez
+        p(style="font-size:1em;") Revisión técnica:
+        p(style="font-size:1em;font-weight:bold;margin-bottom:0;") Profa. Ermita Hernández Heredia, PhD.
+        p(style="font-size:1em;margin-top:2px;") Especialista el Servicio de Extensión Agricola, Universidad de Puerto Rico, Recinto Universitario de Mayaguez
+        p(style="font-size:1em;font-weight:bold;margin-bottom:0;") Prof. Daniel Bair Gallegos, PhD.
+        p(style="font-size:1em;margin-top:2px;") Especialista del Servicio de Extensión Agrícola, Universidad de Puerto Rico, Recinto Universitario de Mayaguez
+        p(style="font-size:1em;font-weight:bold;margin-bottom:0;") Prof. Joaguín A. Chong Nuñez, PhD.
+        p(style="font-size:1em;margin-top:2px;") Investigador, Estación Experimental Agrícola, Universidad de Puerto Rico, Recinto Universitario de Mayaguez
+
+    div#footer(style="background-color:white;color:black;font-size:0.5em")
+      div(style="padding:30px 0 30px 0;max-width:800px;margin:auto")
+        p This work...
+
+

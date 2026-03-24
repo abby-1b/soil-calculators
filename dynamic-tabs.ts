@@ -2,7 +2,7 @@
 const DEBUGGING = false;
 
 export class Translation {
-  private static currentLanguage: string = 'en';
+  public static currentLanguage: string = 'en';
   private static labelIndex = 0;
   private static labels: Record<string, string[]> = {};
   private static currentLabels: string[] = [];
@@ -54,6 +54,22 @@ export class Tab<T extends Record<string, any>> {
     label.innerHTML = Translation.getLabel(labelString);
     label.className = 'text-label';
     this.element.appendChild(label);
+  }
+
+  /** Puts raw elements on the tab. */
+  public raw(callback: (tab: this) => HTMLElement[]) {
+    const elements = callback(this);
+    elements.forEach(e => this.element.appendChild(e));
+    return this;
+  }
+
+  public header(labelString: string, callback: (el: HTMLHeadingElement) => void = () => {}): this {
+    const label = document.createElement('h3');
+    label.innerHTML = Translation.getLabel(labelString);
+    label.className = 'text-header';
+    this.element.appendChild(label);
+    callback(label);
+    return this;
   }
 
   public text<N extends string>(label: N, hideLabel = false): Tab<T & Record<N, string | undefined>> {
